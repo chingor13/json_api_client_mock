@@ -11,8 +11,8 @@ module JsonApiClientMock
     end
 
     module ClassMethods
-      def set_test_results(results, parameters = {})
-        self.test_mocks += {:results => results, :params => parameters}
+      def set_test_results(results, conditions = {})
+        self.test_mocks += {results: results, conditions: conditions}
         true
       end
 
@@ -21,9 +21,15 @@ module JsonApiClientMock
       end
 
       def find_with_mocking(conditions)
-      # def find(conditions)
         puts "in find"
-        self.test_mocks.detect{|mock| mock[:params] == conditions} || raise(MissingMock, "no test results set for #{self.name} with conditions: #{conditions.inspect}")
+        results = self.test_mocks.detect{|mock| mock[:conditions] == conditions} || 
+          self.test_mocks.last
+
+        if results
+          results[:results]
+        else
+          raise(MissingMock, "no test results set for #{self.name} with conditions: #{conditions.inspect}")
+        end
       end
     end
   end
