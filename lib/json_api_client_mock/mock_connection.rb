@@ -2,14 +2,11 @@ require 'ostruct'
 
 module JsonApiClientMock
   class MockConnection
-    def self.instance
-      @instance ||= self.new
-    end
+    class_attribute :mocks
+    self.mocks = {}
 
-    def initialize
-      # ignored
-      @mocks = {}
-    end
+    # ignored
+    def initialize(*attrs); end
 
     def execute(query)
       if results = find_test_results(query)
@@ -22,18 +19,18 @@ module JsonApiClientMock
     end
 
     def set_test_results(klass, results, conditions = nil)
-      @mocks[klass.name] ||= []
-      @mocks[klass.name].unshift({results: results, conditions: conditions})
+      self.class.mocks[klass.name] ||= []
+      self.class.mocks[klass.name].unshift({results: results, conditions: conditions})
     end
 
     def clear_test_results
-      @mocks = {}
+      self.class.mocks = {}
     end
 
     protected
 
     def find_test_results(query)
-      class_mocks = @mocks.fetch(query.klass.name, [])
+      class_mocks = self.class.mocks.fetch(query.klass.name, [])
       class_mocks.detect{|mock| mock[:conditions] == query.params} ||
         class_mocks.detect{|mock| mock[:conditions].nil?}
     end
