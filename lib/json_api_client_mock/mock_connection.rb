@@ -7,6 +7,8 @@ module JsonApiClientMock
 
     # ignored
     def initialize(*attrs); end
+    def use(*attrs); end
+    def delete(*attrs); end
 
     def execute(query)
       if results = find_test_results(query)
