@@ -3,7 +3,7 @@ module JsonApiClientMock
     extend ActiveSupport::Concern
 
     included do
-      class_attribute :original_connection_class
+      class_attribute :original_connection_class, :original_connection_object
       self.disable_net_connect!
     end
 
@@ -18,11 +18,14 @@ module JsonApiClientMock
 
       def allow_net_connect!
         self.connection_class = self.original_connection_class
+        self.connection_object = self.original_connection_object
       end
 
       def disable_net_connect!
         self.original_connection_class = self.connection_class
+        self.original_connection_object = self.connection_object
         self.connection_class = MockConnection
+        self.connection_object = nil
       end
     end
   end
