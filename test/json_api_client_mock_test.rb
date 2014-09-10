@@ -74,4 +74,25 @@ class JsonApiClientMockTest < MiniTest::Unit::TestCase
     end
   end
 
+  def test_allow_net_connect
+    BarResource.allow_net_connect!
+
+    # base still has mock connection
+    assert_equal JsonApiClientMock::MockConnection,
+      JsonApiClient::Resource.connection_class
+
+    # other connections still have mock connection
+    assert_equal JsonApiClientMock::MockConnection,
+      FooResource.connection_class
+
+    # bar has real connection
+    assert_equal JsonApiClient::Connection,
+      BarResource.connection_class
+
+    BarResource.disable_net_connect!
+
+    # bar has mock connection again
+    assert_equal JsonApiClientMock::MockConnection,
+      BarResource.connection_class
+  end
 end
