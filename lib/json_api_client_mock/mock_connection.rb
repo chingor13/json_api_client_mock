@@ -16,8 +16,8 @@ module JsonApiClientMock
           query.klass.table_name => results[:results]
         })
       else
-        raise MissingMock, "no test results set for #{query.klass.name} with conditions: #{query.params.inspect}"
-      end      
+        raise MissingMock, missing_message(query)
+      end
     end
 
     def set_test_results(klass, results, conditions = nil)
@@ -31,10 +31,18 @@ module JsonApiClientMock
 
     protected
 
+    def class_mocks(query)
+      self.class.mocks.fetch(query.klass.name, [])
+    end
+
     def find_test_results(query)
-      class_mocks = self.class.mocks.fetch(query.klass.name, [])
-      class_mocks.detect{|mock| mock[:conditions] == query.params} ||
-        class_mocks.detect{|mock| mock[:conditions].nil?}
+      class_mocks(query).detect{|mock| mock[:conditions] == query.params} ||
+        class_mocks(query).detect{|mock| mock[:conditions].nil?}
+    end
+
+    def missing_message(query)
+      ["no test results set for #{query.klass.name} with conditions: #{query.params.pretty_inspect}",
+        "mocks conditions available: #{class_mocks(query).map {|m| m[:conditions]}.pretty_inspect}"].join("\n\n")
     end
   end
 end
