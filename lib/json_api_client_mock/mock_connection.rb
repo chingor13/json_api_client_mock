@@ -36,13 +36,14 @@ module JsonApiClientMock
     end
 
     def find_test_results(query)
-      class_mocks(query).detect{|mock| mock[:conditions] == query.params} ||
-        class_mocks(query).detect{|mock| mock[:conditions].nil?}
+      class_mocks(query).detect { |mock| mock[:conditions] == query.params } ||
+        class_mocks(query).detect { |mock| mock[:conditions] && (mock[:conditions][:path] == query.path) } ||
+          class_mocks(query).detect { |mock| mock[:conditions].nil? }
     end
 
     def missing_message(query)
-      ["no test results set for #{query.klass.name} with conditions: #{query.params.pretty_inspect}",
-        "mocks conditions available: #{class_mocks(query).map {|m| m[:conditions]}.pretty_inspect}"].join("\n\n")
+      ["no test results set for #{query.klass.name} with conditions: #{query.params.pretty_inspect} or for request path #{query.path}",
+        "mocks conditions available: #{class_mocks(query).map { |m| m[:conditions] }.pretty_inspect}"].join("\n\n")
     end
   end
 end
