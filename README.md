@@ -39,6 +39,24 @@ MyResource.set_test_results([
 
 MyResource.where(condition1: 'value1', condition2: 'value2').all
 => [<#MyResource foo:'asdf', qwer:'bar'>]
+```
+To set the response meta for `MyResource`:
+
+```
+MyResource.set_test_results([
+  {foo: 'asdf', 'qwer': 'bar'}
+], {
+  condition1: 'value1',
+  condition2: 'value2',
+}, {
+  meta_attribute: 1000
+})
+
+response = MyResource.where(condition1: 'value1', condition2: 'value2').all
+=> [<#MyResource foo:'asdf', qwer:'bar'>]
+puts response.meta
+=> { :meta_attribute => 1000 }
+```
 
 # condition order should not matter
 MyResource.where(condition2: 'value2', condition1: 'value1').all
