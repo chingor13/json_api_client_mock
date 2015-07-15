@@ -13,16 +13,17 @@ module JsonApiClientMock
     def execute(query)
       if results = find_test_results(query)
         OpenStruct.new(:body => {
-          query.klass.table_name => results[:results]
+          query.klass.table_name => results[:results],
+          "meta" => results[:meta]
         })
       else
         raise MissingMock, missing_message(query)
       end
     end
 
-    def set_test_results(klass, results, conditions = nil)
+    def set_test_results(klass, results, conditions = nil, response_meta = {})
       self.class.mocks[klass.name] ||= []
-      self.class.mocks[klass.name].unshift({results: results, conditions: conditions})
+      self.class.mocks[klass.name].unshift({results: results, conditions: conditions, meta: response_meta })
     end
 
     def clear_test_results

@@ -50,6 +50,13 @@ class JsonApiClientMockTest < MiniTest::Unit::TestCase
     assert_equal('asdf', first.qwer)
   end
 
+  def test_meta_response
+    BarResource.set_test_results([{foo: 'bar', qwer: 'asdf'}], {foo: 'bar'}, {meta_attr: 1000})
+    results = BarResource.where(foo: 'bar').all
+
+    assert_equal(1000, results.meta[:meta_attr])
+  end
+
   def test_by_conditional_request_path_mocking
     BarResource.set_test_results([{foo: 'bar', qwer: 'asdf'}], {path: 'bar_resources/10'})
     assert_raises(JsonApiClientMock::MissingMock) do
